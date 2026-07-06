@@ -497,8 +497,8 @@ function renderHoy(){
 
   let h='<div class="card"><div class="sumrow"><div>'
     +'<div class="eyebrow g">Comidas del día</div>'
-    +'<div class="sumbig">'+done+' de '+plan.length+' registradas</div></div>'
-    +'<div class="dots">'+dots+'</div></div>'
+    +'<div class="sumbig" id="sumBig">'+done+' de '+plan.length+' registradas</div></div>'
+    +'<div class="dots" id="sumDots">'+dots+'</div></div>'
     +(wknd?'<p class="hint"><b>Fin de semana:</b> mantené la lógica — proteína en cada comida, frituras al mínimo. 1-2 comidas libres no arruinan nada; el finde entero libre, sí.</p>'
           :'<p class="hint">La regla madre: <b>lo que cenás hoy (doble) es tu almuerzo de mañana.</b></p>')
     +'</div>';
@@ -528,6 +528,17 @@ function renderHoy(){
 
   h+='<button class="btn wide" id="btnSaveNow">Guardar cambios</button>';
   return h;
+}
+
+/* actualiza el contador y los puntitos de arriba sin redibujar la pantalla (no mueve el scroll) */
+function updateHoySummary(){
+  const plan=DIETA[pD(selDate).getDay()];
+  const rec=state.meals[selDate]||{};
+  const done=plan.filter(m=>rec[m.id]&&rec[m.id].s).length;
+  const b=document.getElementById('sumBig');
+  if(b) b.textContent=done+' de '+plan.length+' registradas';
+  const d=document.getElementById('sumDots');
+  if(d) d.innerHTML=plan.map(m=>'<span class="dot '+((rec[m.id]&&rec[m.id].s)||'')+'"></span>').join('');
 }
 
 /* ================= GYM ================= */
@@ -971,18 +982,18 @@ const main=document.getElementById('main');
 function render(){
   renderHeader();
   main.innerHTML=(tab==='hoy')?renderHoy():(tab==='gym')?renderGym():renderProg();
-  window.scrollTo(0,0);
 }
+function renderTop(){ render(); window.scrollTo(0,0); }
 
 /* ================= eventos ================= */
-document.getElementById('prevD').addEventListener('click',()=>{ const d=pD(selDate); d.setDate(d.getDate()-1); selDate=fmtD(d); render(); });
-document.getElementById('nextD').addEventListener('click',()=>{ const d=pD(selDate); d.setDate(d.getDate()+1); selDate=fmtD(d); render(); });
-document.getElementById('todayBtn').addEventListener('click',()=>{ selDate=todayStr(); render(); });
+document.getElementById('prevD').addEventListener('click',()=>{ const d=pD(selDate); d.setDate(d.getDate()-1); selDate=fmtD(d); renderTop(); });
+document.getElementById('nextD').addEventListener('click',()=>{ const d=pD(selDate); d.setDate(d.getDate()+1); selDate=fmtD(d); renderTop(); });
+document.getElementById('todayBtn').addEventListener('click',()=>{ selDate=todayStr(); renderTop(); });
 document.querySelectorAll('nav.tabs button').forEach(b=>{
   b.addEventListener('click',()=>{
     tab=b.dataset.tab;
     document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));
-    render();
+    renderTop();
   });
 });
 
@@ -1005,7 +1016,13 @@ main.addEventListener('click',e=>{
     if(!state.meals[selDate]) state.meals[selDate]={};
     const cur=state.meals[selDate][id]||{};
     cur.s=(cur.s===v)?null:v;
-    state.meals[selDate][id]=cur; save(); render(); return;
+    state.meals[selDate][id]=cur; save();
+    /* marcar el botón en el lugar, sin redibujar: así el scroll no se mueve */
+    st.closest('.seg').querySelectorAll('.sbtn').forEach(b=>{
+      b.classList.toggle('on', !!cur.s && b.dataset.status===cur.s);
+    });
+    updateHoySummary();
+    return;
   }
   const db=e.target.closest('[data-dia]');
   if(db){ ensureGym(db.dataset.dia); save(); render(); return; }
