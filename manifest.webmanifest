@@ -1,0 +1,9 @@
+{
+  "name": "Gym y Dieta",
+  "short_name": "Gym y Dieta",
+  "display": "standalone",
+  "start_url": ".",
+  "background_color": "#F2F4EF",
+  "theme_color": "#2E7D46",
+  "icons": [{ "src": "icon.png", "sizes": "512x512", "type": "image/png" }]
+}
