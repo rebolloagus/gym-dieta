@@ -448,7 +448,13 @@ const GYM = {
       {id:'c7',name:'Curl martillo con mancuernas',sets:2,rmin:10,rmax:12,rest:'60 s',cue:'Agarre neutro, trabaja el antebrazo también.'}
     ]}
 };
-const WARMUP='5 min de cinta o bici suave + gato-camello ×10 lento + círculos de cadera ×10 por lado + balanceos suaves de pierna (adelante-atrás y al costado) ×10 por pierna agarrado de algo + círculos de brazos ×10.';
+const WARMUP_ITEMS=[
+  ['Cinta o bici suave','5 min',''],
+  ['Gato-camello','×10','Lento'],
+  ['Círculos de cadera','×10 por lado',''],
+  ['Balanceos suaves de pierna','×10 por pierna','Adelante-atrás y al costado, agarrado de algo'],
+  ['Círculos de brazos','×10','']
+];
 const STRETCH_INTRO='Cada posición: 30 segundos, 2 vueltas, sin rebotes, molestia suave (5/10) pero nunca dolor. Exhalá al profundizar.';
 const STRETCH_ITEMS=[
   ['Gato-camello','10 lentas','En cuadrupedia, redondeá y arqueá la espalda despacio'],
@@ -599,7 +605,7 @@ function ensureGym(dia){
 }
 function sessionHasData(g){
   if(!g) return false;
-  if(g.core||g.str||anyCk(g.coreEx)||anyCk(g.strEx)) return true;
+  if(g.core||g.str||anyCk(g.coreEx)||anyCk(g.strEx)||anyCk(g.wuEx)) return true;
   if(g.sets) for(const k in g.sets){ if((g.sets[k]||[]).some(s=>s&&(s.w||s.r))) return true; }
   return false;
 }
@@ -652,8 +658,8 @@ function renderGym(){
   const plan=GYM[dia];
   const prev=prevSession(dia);
 
-  h+='<div class="card"><div class="eyebrow b">Entrada en calor · 10 min</div>'
-    +'<p class="hint" style="margin-top:4px">'+WARMUP+'</p>'
+  h+='<div class="card">'
+    +checklistBlock('wuEx','Entrada en calor (10 min)','',WARMUP_ITEMS,g,'')
     +(plan.warn?'<div class="warn">'+plan.warn+'</div>':'')
     +'</div>';
 
@@ -664,7 +670,7 @@ function renderGym(){
     for(let i=0;i<ex.sets;i++){
       const s=arr[i]||{};
       rows+='<div class="setrow"><span class="setn">S'+(i+1)+'</span>'
-        +'<input type="number" inputmode="decimal" step="0.5" min="0" placeholder="kg" value="'+(s.w!=null?s.w:'')+'" data-set="1" data-ex="'+ex.id+'" data-i="'+i+'" data-f="w" aria-label="'+esc(ex.name)+' serie '+(i+1)+' kilos">'
+        +'<input type="text" inputmode="decimal" placeholder="kg" value="'+(s.w!=null?String(s.w).replace('.',','):'')+'" data-set="1" data-ex="'+ex.id+'" data-i="'+i+'" data-f="w" aria-label="'+esc(ex.name)+' serie '+(i+1)+' kilos">'
         +'<input type="number" inputmode="numeric" step="1" min="0" placeholder="reps" value="'+(s.r!=null?s.r:'')+'" data-set="1" data-ex="'+ex.id+'" data-i="'+i+'" data-f="r" class="'+(+s.r>=ex.rmax?'hit':'')+'" aria-label="'+esc(ex.name)+' serie '+(i+1)+' repeticiones">'
         +'</div>';
     }
@@ -811,7 +817,8 @@ function fillReport(mon){
         +'<td>'+(done&&allTop(ex,arr)?'<span class="st-todo">Subir peso</span>':'')+'</td></tr>';
     });
     h+='</table>'
-      +'<p class="mut">Core: '+ckCount(g,'coreEx','core',2)+' de 2 · Estiramientos y movilidad: '
+      +'<p class="mut">Entrada en calor: '+ckCount(g,'wuEx','',WARMUP_ITEMS.length)+' de '+WARMUP_ITEMS.length
+      +' · Core: '+ckCount(g,'coreEx','core',2)+' de 2 · Estiramientos y movilidad: '
       +ckCount(g,'strEx','str',STRETCH_ITEMS.length)+' de '+STRETCH_ITEMS.length+'</p>';
   });
   if(!anyGym) h+='<p class="mut">Sin sesiones registradas.</p>';
@@ -855,7 +862,8 @@ function reportText(mon){
       const done=fmtSets(arr,ex.sets);
       if(done) t+='- '+ex.name+': '+done+(allTop(ex,arr)?' → subir peso':'')+'\n';
     });
-    t+='Core '+ckCount(g,'coreEx','core',2)+'/2 · Estiramientos '+ckCount(g,'strEx','str',STRETCH_ITEMS.length)+'/'+STRETCH_ITEMS.length+'\n';
+    t+='Calor '+ckCount(g,'wuEx','',WARMUP_ITEMS.length)+'/'+WARMUP_ITEMS.length
+      +' · Core '+ckCount(g,'coreEx','core',2)+'/2 · Estiramientos '+ckCount(g,'strEx','str',STRETCH_ITEMS.length)+'/'+STRETCH_ITEMS.length+'\n';
   });
   return t;
 }
@@ -963,7 +971,7 @@ function renderProg(){
 
   let h='<div class="card"><div class="eyebrow g">Peso corporal</div>'+kpis
     +'<div class="chartbox">'+weightChart()+'</div><div class="cdetail" id="wdetail"></div>'
-    +'<div class="wform"><input type="number" inputmode="decimal" step="0.1" min="40" max="150" id="pesoIn" placeholder="kg de hoy (ej: 77.2)"><button class="btn" id="pesoBtn">Guardar</button></div>'
+    +'<div class="wform"><input type="text" inputmode="decimal" id="pesoIn" placeholder="kg de hoy (ej: 77,2)"><button class="btn" id="pesoBtn">Guardar</button></div>'
     +'<p class="hint">Pesate 1 sola vez por semana: <b>viernes en ayunas</b>, después del baño.</p>'
     +(wlist?'<div class="wlist">'+wlist+'</div>':'')
     +'</div>';
@@ -1094,7 +1102,7 @@ main.addEventListener('click',e=>{
   }
   if(e.target.id==='pesoBtn'){
     const inp=document.getElementById('pesoIn');
-    const v=parseFloat(inp.value);
+    const v=parseFloat(String(inp.value).replace(',','.'));
     if(!(v>=40&&v<=150)){ toast('Ingresá un peso válido en kg'); return; }
     const t=todayStr();
     const ix=state.peso.findIndex(p=>p.d===t);
@@ -1171,7 +1179,8 @@ main.addEventListener('input',e=>{
     const id=t.dataset.ex, i=+t.dataset.i, f=t.dataset.f;
     if(!g.sets[id]) g.sets[id]=[];
     if(!g.sets[id][i]) g.sets[id][i]={};
-    const num=parseFloat(t.value);
+    /* aceptar coma o punto como separador decimal */
+    const num=parseFloat(String(t.value).replace(',','.'));
     const v=(t.value===''||isNaN(num))?null:num;
     if(v==null) delete g.sets[id][i][f]; else g.sets[id][i][f]=v;
     save();
