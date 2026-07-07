@@ -190,9 +190,21 @@ input.note:focus{outline:none;border-bottom-color:var(--green)}
 .checkrow input[type=checkbox]{width:20px;height:20px;margin:2px 0 0;accent-color:var(--green);flex:none}
 .checkrow .ct{display:block;font-weight:700;font-size:14.5px}
 .checkrow .cd{font-size:13px;color:var(--ink2)}
-.checkrow .cd ul{margin:6px 0;padding-left:17px}
-.checkrow .cd li{margin:3px 0}
-.checkrow .cd b{color:var(--ink)}
+.ckhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.ckhead .ct{font-weight:700;font-size:14.5px}
+.ckhead .cnt{
+  font-size:12px;font-weight:700;color:var(--green-ink);background:var(--green-soft);
+  border:1px solid var(--green-line);border-radius:999px;padding:1px 10px;
+  font-variant-numeric:tabular-nums;white-space:nowrap;flex:none;
+}
+.cd{font-size:13px;color:var(--ink2)}
+.cd b{color:var(--ink)}
+.ckitem{
+  display:flex;gap:10px;align-items:flex-start;padding:8px 0;margin-top:2px;
+  border-top:1px solid var(--line);font-size:13px;color:var(--ink2);cursor:pointer;
+}
+.ckitem input[type=checkbox]{width:19px;height:19px;margin:0;accent-color:var(--green);flex:none}
+.ckitem b{color:var(--ink)}
 
 /* ============ progreso ============ */
 .kpis{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 2px}
@@ -395,7 +407,10 @@ const DIETA = {
 /* ================= RUTINA ================= */
 const GYM = {
   A:{ label:'Día A', sub:'Empuje', desc:'Pecho, hombros y tríceps', dow:'lunes',
-    core:'Plancha frontal 3 series aguantando 20-40 s + bird-dog 2 × 8 por lado (en cuadrupedia, estirá brazo y pierna contrarios, lento).',
+    coreItems:[
+      ['Plancha frontal','3 series aguantando 20-40 s',''],
+      ['Bird-dog','2 × 8 por lado','En cuadrupedia, estirá brazo y pierna contrarios, lento']
+    ],
     ex:[
       {id:'a1',name:'Press banca plano con mancuernas',sets:3,rmin:8,rmax:12,rest:'90 s',cue:'Bajá controlado, sin rebotar en el pecho.'},
       {id:'a2',name:'Press inclinado con mancuernas',sets:3,rmin:8,rmax:12,rest:'90 s',cue:'Banco a 30-45 grados.'},
@@ -405,7 +420,10 @@ const GYM = {
       {id:'a6',name:'Tríceps en polea alta (barra o soga)',sets:3,rmin:10,rmax:12,rest:'60 s',cue:'Codos pegados al cuerpo.'}
     ]},
   B:{ label:'Día B', sub:'Piernas', desc:'Piernas completo + glúteos', dow:'miércoles',
-    core:'Plancha lateral 3 × 15-30 s por lado + dead bug 2 × 8 por lado (boca arriba, lumbar pegada al piso).',
+    coreItems:[
+      ['Plancha lateral','3 × 15-30 s por lado',''],
+      ['Dead bug','2 × 8 por lado','Boca arriba, lumbar pegada al piso']
+    ],
     warn:'Sobre la sentadilla hack — leelo en serio: tu fisio te prohibió sentadilla y prensa, y la hack es prima hermana de las dos (la espalda va apoyada, pero la columna igual carga peso). Condiciones: (1) confirmala con tu fisio en la próxima visita; (2) las primeras 2 semanas solo el peso de la máquina o casi; (3) bajá hasta muslos paralelos, no más profundo, y que la cola NUNCA se despegue del respaldo abajo; (4) a la mínima molestia lumbar la sacás y esas series pasan a extensión de cuádriceps (4 × 12-15). Sin negociación.',
     ex:[
       {id:'b1',name:'Sentadilla hack (máquina)',sets:3,rmin:10,rmax:12,rest:'2 min',cue:'LEÉ EL RECUADRO DE ARRIBA. Primero de la sesión, con piernas frescas.'},
@@ -416,7 +434,10 @@ const GYM = {
       {id:'b6',name:'Gemelos de pie en escalón con mancuerna',sets:4,rmin:12,rmax:15,rest:'60 s',cue:'Una mano con la mancuerna, la otra agarrada a algo; talón bien abajo, pausa de 1 s arriba. Si querés más intensidad, hacelo a una pierna.'}
     ]},
   C:{ label:'Día C', sub:'Tirón', desc:'Espalda y bíceps', dow:'viernes',
-    core:'Plancha frontal 3 × 20-40 s + bird-dog 2 × 8 por lado (en cuadrupedia, estirá brazo y pierna contrarios, lento).',
+    coreItems:[
+      ['Plancha frontal','3 × 20-40 s',''],
+      ['Bird-dog','2 × 8 por lado','En cuadrupedia, estirá brazo y pierna contrarios, lento']
+    ],
     ex:[
       {id:'c1',name:'Jalón al pecho (polea, agarre ancho)',sets:3,rmin:8,rmax:12,rest:'90 s',cue:'Pecho afuera; tirá con la espalda, no con la lumbar.'},
       {id:'c2',name:'Remo sentado en polea baja (agarre V)',sets:3,rmin:10,rmax:12,rest:'90 s',cue:'Torso quieto y derecho: no te hamaques ni redondees la espalda al ir adelante.'},
@@ -438,9 +459,36 @@ const STRETCH_ITEMS=[
   ['Pantorrilla contra la pared','2 × 30 s por lado','Talón apoyado en el piso, pierna atrás estirada; después repetí con rodilla algo flexionada'],
   ['Postura del niño','1 × 60 s','Para cerrar: cola a los talones, brazos estirados adelante, respirá']
 ];
-const STRETCH_HTML=STRETCH_INTRO+'<ul>'
-  +STRETCH_ITEMS.map(s=>'<li><b>'+s[0]+'</b> — '+s[1]+': '+s[2]+'</li>').join('')
-  +'</ul>La flexibilidad tarda 4-6 semanas en notarse. No fuerces llegar a los pies: va a llegar solo con la constancia.';
+const STRETCH_OUTRO='La flexibilidad tarda 4-6 semanas en notarse. No fuerces llegar a los pies: va a llegar solo con la constancia.';
+
+/* bloque de casillas por ejercicio (core / estiramientos) con contador */
+function checklistBlock(fieldEx, title, intro, items, g, outro){
+  const obj=(g&&g[fieldEx])||{};
+  let n=0; items.forEach((_,i)=>{ if(obj[i]) n++; });
+  let h='<div class="ckhead"><span class="ct">'+title+'</span>'
+    +'<span class="cnt" id="cnt-'+fieldEx+'">'+n+' de '+items.length+'</span></div>';
+  if(intro) h+='<div class="cd" style="margin:2px 0 2px">'+intro+'</div>';
+  items.forEach((it,i)=>{
+    h+='<label class="ckitem"><input type="checkbox" data-ckx="'+fieldEx+'" data-i="'+i+'" data-total="'+items.length+'"'+(obj[i]?' checked':'')+'>'
+      +'<span><b>'+it[0]+'</b> — '+it[1]+(it[2]?': '+it[2]:'')+'</span></label>';
+  });
+  if(outro) h+='<div class="cd" style="margin-top:6px">'+outro+'</div>';
+  return h;
+}
+/* datos viejos: si el bloque entero estaba marcado con el checkbox anterior, pasar a todas las casillas */
+function normChecks(g){
+  if(!g) return;
+  const map={core:['coreEx',2],str:['strEx',STRETCH_ITEMS.length],strHome:['strHomeEx',STRETCH_ITEMS.length]};
+  for(const leg in map){
+    const f=map[leg][0], total=map[leg][1];
+    if(g[leg]===true&&!g[f]){ g[f]={}; for(let i=0;i<total;i++) g[f][i]=true; }
+  }
+}
+function ckCount(g,f,leg,total){
+  if(g[f]){ let n=0; for(let i=0;i<total;i++){ if(g[f][i]) n++; } return n; }
+  return g[leg]?total:0;
+}
+function anyCk(o){ if(!o) return false; for(const k in o){ if(o[k]) return true; } return false; }
 
 /* ================= estado ================= */
 const KEY='gymdieta_agustin_v1';
@@ -551,7 +599,7 @@ function ensureGym(dia){
 }
 function sessionHasData(g){
   if(!g) return false;
-  if(g.core||g.str) return true;
+  if(g.core||g.str||anyCk(g.coreEx)||anyCk(g.strEx)) return true;
   if(g.sets) for(const k in g.sets){ if((g.sets[k]||[]).some(s=>s&&(s.w||s.r))) return true; }
   return false;
 }
@@ -575,6 +623,7 @@ function allTop(ex,arr){
 function renderGym(){
   const dow=pD(selDate).getDay();
   const g=state.gym[selDate]||{};
+  normChecks(state.gym[selDate]);
   const dia=g.dia||defaultDia(dow);
   curDia=dia;
   const wknd=(dow===0||dow===6);
@@ -590,9 +639,11 @@ function renderGym(){
     +'</div>';
 
   if(wknd){
-    h+='<div class="checkrow" style="margin-top:10px"><input type="checkbox" id="strHome" data-check="strHome"'+(g.strHome?' checked':'')+'>'
-      +'<div style="flex:1"><label class="ct" for="strHome">Estiramientos en casa (15-20 min)</label>'
-      +'<div class="cd">Tu «cuarto día» escondido: el mismo bloque de estiramientos de la rutina, 1 día extra en casa el fin de semana. '+STRETCH_HTML+'</div></div></div>';
+    h+='<div style="margin-top:12px">'
+      +checklistBlock('strHomeEx','Estiramientos en casa (15-20 min)',
+        'Tu «cuarto día» escondido: el mismo bloque de estiramientos de la rutina, 1 día extra en casa el fin de semana. '+STRETCH_INTRO,
+        STRETCH_ITEMS,g,STRETCH_OUTRO)
+      +'</div>';
   }
   h+='</div>';
 
@@ -628,11 +679,12 @@ function renderGym(){
   });
 
   h+='<div class="card">'
-    +'<div class="checkrow"><input type="checkbox" id="ck-core" data-check="core"'+(g.core?' checked':'')+'>'
-    +'<div style="flex:1"><label class="ct" for="ck-core">Core del día</label><div class="cd">'+plan.core+'</div></div></div>'
-    +'<div class="checkrow"><input type="checkbox" id="ck-str" data-check="str"'+(g.str?' checked':'')+'>'
-    +'<div style="flex:1"><label class="ct" for="ck-str">Estiramientos y movilidad (12-15 min al final)</label>'
-    +'<div class="cd">Para vos es TAN importante como las pesas: es lo que te va a destrabar la cadera y la parte de atrás de las piernas. '+STRETCH_HTML+'</div></div></div>'
+    +checklistBlock('coreEx','Core del día','',plan.coreItems,g,'')
+    +'<div style="margin-top:14px">'
+    +checklistBlock('strEx','Estiramientos y movilidad (12-15 min al final)',
+      'Para vos es TAN importante como las pesas: es lo que te va a destrabar la cadera y la parte de atrás de las piernas. '+STRETCH_INTRO,
+      STRETCH_ITEMS,g,STRETCH_OUTRO)
+    +'</div>'
     +'</div>';
 
   h+='<button class="btn wide" id="btnSaveNow">Guardar cambios</button>';
@@ -743,7 +795,8 @@ function fillReport(mon){
   days.forEach(d=>{
     const g=state.gym[d];
     if(!g) return;
-    if(g.strHome){ anyGym=true; h+='<h3>'+DOWF[pD(d).getDay()]+' '+pD(d).getDate()+'/'+(pD(d).getMonth()+1)+'</h3><p>Estiramientos en casa (15-20 min) ✓</p>'; }
+    const nsh=ckCount(g,'strHomeEx','strHome',STRETCH_ITEMS.length);
+    if(nsh>0){ anyGym=true; h+='<h3>'+DOWF[pD(d).getDay()]+' '+pD(d).getDate()+'/'+(pD(d).getMonth()+1)+'</h3><p>Estiramientos en casa (15-20 min): '+nsh+' de '+STRETCH_ITEMS.length+'</p>'; }
     if(!g.dia||!sessionHasData(g)) return;
     anyGym=true;
     const plan=GYM[g.dia];
@@ -758,7 +811,8 @@ function fillReport(mon){
         +'<td>'+(done&&allTop(ex,arr)?'<span class="st-todo">Subir peso</span>':'')+'</td></tr>';
     });
     h+='</table>'
-      +'<p class="mut">Core: '+(g.core?'✓ hecho':'✗ no')+' · Estiramientos y movilidad: '+(g.str?'✓ hechos':'✗ no')+'</p>';
+      +'<p class="mut">Core: '+ckCount(g,'coreEx','core',2)+' de 2 · Estiramientos y movilidad: '
+      +ckCount(g,'strEx','str',STRETCH_ITEMS.length)+' de '+STRETCH_ITEMS.length+'</p>';
   });
   if(!anyGym) h+='<p class="mut">Sin sesiones registradas.</p>';
 
@@ -801,7 +855,7 @@ function reportText(mon){
       const done=fmtSets(arr,ex.sets);
       if(done) t+='- '+ex.name+': '+done+(allTop(ex,arr)?' → subir peso':'')+'\n';
     });
-    t+='Core '+(g.core?'✓':'✗')+' · Estiramientos '+(g.str?'✓':'✗')+'\n';
+    t+='Core '+ckCount(g,'coreEx','core',2)+'/2 · Estiramientos '+ckCount(g,'strEx','str',STRETCH_ITEMS.length)+'/'+STRETCH_ITEMS.length+'\n';
   });
   return t;
 }
@@ -1132,6 +1186,18 @@ main.addEventListener('input',e=>{
 
 main.addEventListener('change',e=>{
   const t=e.target;
+  if(t.dataset.ckx!==undefined){
+    const g=ensureGym(curDia);
+    const f=t.dataset.ckx, total=+t.dataset.total;
+    if(!g[f]) g[f]={};
+    g[f][+t.dataset.i]=t.checked;
+    let n=0; for(let i=0;i<total;i++){ if(g[f][i]) n++; }
+    const leg={coreEx:'core',strEx:'str',strHomeEx:'strHome'}[f];
+    if(leg) g[leg]=(n===total);
+    const c=document.getElementById('cnt-'+f);
+    if(c) c.textContent=n+' de '+total;
+    save(); return;
+  }
   if(t.dataset.check!==undefined){
     const g=ensureGym(curDia);
     g[t.dataset.check]=t.checked; save(); return;
