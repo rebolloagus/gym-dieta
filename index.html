@@ -186,6 +186,19 @@ input.note:focus{outline:none;border-bottom-color:var(--green)}
   background:var(--amber-soft);border:1px solid var(--amber-line);color:var(--amber-ink);
   border-radius:10px;padding:8px 11px;font-size:12.5px;margin:10px 0 0;
 }
+.pausedTag{
+  display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--amber-ink);background:var(--amber-soft);border:1px solid var(--amber-line);
+  border-radius:999px;padding:2px 10px;margin:6px 0;
+}
+.satband{
+  background:var(--navy-soft);border:1px solid var(--navy-line);color:var(--navy-ink);
+  border-radius:12px;padding:10px 12px;font-size:13.5px;font-weight:600;margin:0 0 10px;
+}
+.satdone{
+  background:var(--green-soft);border:1px solid var(--green-line);color:var(--green-ink);
+  border-radius:12px;padding:10px 12px;font-size:13.5px;font-weight:600;margin:0 0 10px;
+}
 .checkrow{display:flex;align-items:flex-start;gap:10px;padding:4px 0}
 .checkrow input[type=checkbox]{width:20px;height:20px;margin:2px 0 0;accent-color:var(--green);flex:none}
 .checkrow .ct{display:block;font-weight:700;font-size:14.5px}
@@ -353,13 +366,6 @@ const WK = {
 };
 function meals(list){ return list.map(([id,desc])=>({id, t:WK[id].t, name:WK[id].name, opt:!!WK[id].opt, desc})); }
 
-const FINDE = meals([
-  ['des','Libre con cabeza: proteína en el plato.'],
-  ['alm','Libre con cabeza: proteína en el plato, frituras al mínimo.'],
-  ['mer','Libre con cabeza.'],
-  ['cena','Libre con cabeza: proteína en el plato, frituras al mínimo.']
-]);
-
 const DIETA = {
   1: meals([
     ['des','Leche con cocoa (250 ml + cocoa 7 g + azúcar 5 g) + 2 fetas de pan lactal con queso untable light (20 g) y mermelada (15 g)'],
@@ -396,12 +402,12 @@ const DIETA = {
   5: meals([
     ['des','Leche con cocoa (250 ml + cocoa 7 g + azúcar 5 g) + 2 fetas de pan lactal con queso untable light (20 g) y mermelada (15 g)'],
     ['mm','1 manzana'],
-    ['alm','Tupper: fideos con queso rallado + 1 lata de atún (120 g escurrido)'],
+    ['alm','Tupper: fideos con queso rallado + 1 lata de atún mezclada (120 g escurrido)'],
     ['col','2 galletas de arroz — solo si tenés hambre'],
     ['mer','Leche con cocoa (250 ml + cocoa 7 g + azúcar 5 g) + 3 galletas de arroz con pasta de maní (15 g)'],
     ['cena','Cenás afuera con tus padres o tu novia — no hay nada que preparar para esta comida.']
   ]),
-  0: FINDE, 6: FINDE
+  0: [], 6: []
 };
 
 /* ================= RUTINA ================= */
@@ -409,7 +415,7 @@ const GYM = {
   A:{ label:'Día A', sub:'Empuje', desc:'Pecho, hombros y tríceps', dow:'lunes',
     coreItems:[
       ['Plancha frontal','3 series aguantando 20-40 s',''],
-      ['Bird-dog','2 × 8 por lado','En cuadrupedia, estirá brazo y pierna contrarios, lento']
+      ['Pallof press en polea','2-3 × 10-12 por lado','Parado, empujás la manija a la altura del pecho sin dejar que el torso rote — movimiento lento y controlado']
     ],
     ex:[
       {id:'a1',name:'Press banca plano con mancuernas',sets:3,rmin:8,rmax:12,rest:'90 s',cue:'Bajá controlado, sin rebotar en el pecho.'},
@@ -422,12 +428,12 @@ const GYM = {
   B:{ label:'Día B', sub:'Piernas', desc:'Piernas completo + glúteos', dow:'miércoles',
     coreItems:[
       ['Plancha lateral','3 × 15-30 s por lado',''],
-      ['Dead bug','2 × 8 por lado','Boca arriba, lumbar pegada al piso']
+      ['Suitcase carry','3 × 30-40 s por lado','Caminar derecho con una mancuerna en una sola mano, sin inclinarte hacia el lado del peso; empezá con un peso moderado']
     ],
-    warn:'Sobre la sentadilla hack — leelo en serio: tu fisio te prohibió sentadilla y prensa, y la hack es prima hermana de las dos (la espalda va apoyada, pero la columna igual carga peso). Condiciones: (1) confirmala con tu fisio en la próxima visita; (2) las primeras 2 semanas solo el peso de la máquina o casi; (3) bajá hasta muslos paralelos, no más profundo, y que la cola NUNCA se despegue del respaldo abajo; (4) a la mínima molestia lumbar la sacás y esas series pasan a extensión de cuádriceps (4 × 12-15). Sin negociación.',
+    warn:'Sobre la sentadilla hack — en pausa por ahora: decidiste no hacerla hasta sentirte cómodo/a, y la semana sin ella te vino bien — todo bien con eso, no hay apuro. Cuando quieras retomarla, las condiciones siguen siendo las mismas: (1) confirmala con tu fisio antes de volver; (2) las primeras 2 semanas de vuelta, solo el peso de la máquina o casi; (3) bajá hasta muslos paralelos, no más profundo, y que la cola NUNCA se despegue del respaldo abajo; (4) a la mínima molestia lumbar la sacás de nuevo y esas series vuelven a extensión de cuádriceps. Sin negociación.',
     ex:[
-      {id:'b1',name:'Sentadilla hack (máquina)',sets:3,rmin:10,rmax:12,rest:'2 min',cue:'LEÉ EL RECUADRO DE ARRIBA. Primero de la sesión, con piernas frescas.'},
-      {id:'b2',name:'Extensión de cuádriceps (máquina)',sets:3,rmin:12,rmax:15,rest:'75 s',cue:'Sin impulso, bajá lento; pausa de 1 s arriba.'},
+      {id:'b1',name:'Sentadilla hack (máquina)',paused:true,pausedNote:'Pausada por decisión tuya hasta sentirte lista/o y con el OK de tu fisio. Su volumen ya está absorbido en extensión de cuádriceps, abajo.'},
+      {id:'b2',name:'Extensión de cuádriceps (máquina)',sets:4,rmin:12,rmax:15,rest:'75 s',cue:'Sin impulso, bajá lento; pausa de 1 s arriba. (Subió de 3 a 4 series mientras la hack está en pausa)'},
       {id:'b3',name:'Curl femoral (máquina)',sets:4,rmin:12,rmax:15,rest:'75 s',cue:'Tu prioridad: isquios acortados, recorrido completo.'},
       {id:'b4',name:'Abductores en máquina',sets:3,rmin:12,rmax:15,rest:'60 s',cue:'Controlado, sin golpear el peso.'},
       {id:'b5',name:'Aductores en máquina',sets:3,rmin:12,rmax:15,rest:'60 s',cue:'Empezá liviano: esta zona se resiente fácil.'},
@@ -436,11 +442,11 @@ const GYM = {
   C:{ label:'Día C', sub:'Tirón', desc:'Espalda y bíceps', dow:'viernes',
     coreItems:[
       ['Plancha frontal','3 × 20-40 s',''],
-      ['Bird-dog','2 × 8 por lado','En cuadrupedia, estirá brazo y pierna contrarios, lento']
+      ['Pallof press en polea','2-3 × 10-12 por lado','Parado, empujás la manija a la altura del pecho sin dejar que el torso rote — movimiento lento y controlado']
     ],
     ex:[
       {id:'c1',name:'Jalón al pecho (polea, agarre ancho)',sets:3,rmin:8,rmax:12,rest:'90 s',cue:'Pecho afuera; tirá con la espalda, no con la lumbar.'},
-      {id:'c2',name:'Remo sentado en polea baja (agarre V)',sets:3,rmin:10,rmax:12,rest:'90 s',cue:'Torso quieto y derecho: no te hamaques ni redondees la espalda al ir adelante.'},
+      {id:'c2',name:'Remo sentado en polea baja (agarre V)',sets:3,rmin:10,rmax:12,rest:'90 s',cue:'Torso quieto y derecho. Si te molesta la muñeca a esa altura, saltealo por ahora — queda en la rutina, no hace falta sacarlo, es solo hasta que se te pase.'},
       {id:'c3',name:'Jalón al pecho agarre neutro',sets:3,rmin:8,rmax:12,rest:'90 s',cue:'O dominadas asistidas en máquina si hay.'},
       {id:'c4',name:'Remo sentado en polea baja (agarre ancho)',sets:3,rmin:10,rmax:12,rest:'90 s',cue:'Con barra ancha a la altura del pecho, codos abiertos: pega en la espalda alta.'},
       {id:'c5',name:'Face pull en polea (con soga)',sets:3,rmin:15,rmax:15,rest:'60 s',cue:'Para tus hombros adelantados; liviano y prolijo.'},
@@ -462,8 +468,7 @@ const STRETCH_ITEMS=[
   ['Figura 4 (glúteo/piriforme)','2 × 30 s por lado','Boca arriba, tobillo sobre la rodilla contraria, abrazá el muslo'],
   ['Zancada baja (psoas/flexor de cadera)','2 × 30 s por lado','Rodilla al piso, cadera adelante, torso alto. Destraba la cadera dura'],
   ['Cuádriceps acostado de lado','2 × 30 s por lado','Llevá el talón a la cola sin arquear la lumbar'],
-  ['Pantorrilla contra la pared','2 × 30 s por lado','Talón apoyado en el piso, pierna atrás estirada; después repetí con rodilla algo flexionada'],
-  ['Postura del niño','1 × 60 s','Para cerrar: cola a los talones, brazos estirados adelante, respirá']
+  ['Pantorrilla contra la pared','2 × 30 s por lado','Talón apoyado en el piso, pierna atrás estirada; después repetí con rodilla algo flexionada']
 ];
 const STRETCH_OUTRO='La flexibilidad tarda 4-6 semanas en notarse. No fuerces llegar a los pies: va a llegar solo con la constancia.';
 
@@ -526,8 +531,11 @@ function shortD(s){ const d=pD(s); return DOWS[d.getDay()]+' '+d.getDate()+'/'+(
 function kg(n){ const r=Math.round(n*10)/10; return Number.isInteger(r)?String(r):r.toFixed(1).replace('.',','); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-let selDate=todayStr();
-let tab='hoy';
+function isWeekend(d){ const w=d.getDay(); return w===0||w===6; }
+function anchorToday(){ const d=new Date(); while(isWeekend(d)) d.setDate(d.getDate()+1); return fmtD(d); }
+
+let selDate=anchorToday();
+let tab=(new Date().getDay()===6)?'prog':'hoy';
 let exSelVal='a1';
 let curDia=null; /* día de gym mostrado en pantalla (elegido o por defecto) */
 
@@ -536,7 +544,7 @@ function renderHeader(){
   const d=pD(selDate);
   document.getElementById('dowLbl').textContent=DOWF[d.getDay()];
   document.getElementById('dateLbl').textContent=d.getDate()+' de '+MES[d.getMonth()];
-  document.getElementById('todayBtn').hidden=(selDate===todayStr());
+  document.getElementById('todayBtn').hidden=(selDate===anchorToday());
   document.getElementById('daynav').style.visibility=(tab==='prog')?'hidden':'visible';
 }
 
@@ -545,7 +553,6 @@ function renderHoy(){
   const dow=pD(selDate).getDay();
   const plan=DIETA[dow];
   const rec=state.meals[selDate]||{};
-  const wknd=(dow===0||dow===6);
   const done=plan.filter(m=>rec[m.id]&&rec[m.id].s).length;
   const dots=plan.map(m=>'<span class="dot '+((rec[m.id]&&rec[m.id].s)||'')+'"></span>').join('');
 
@@ -553,8 +560,7 @@ function renderHoy(){
     +'<div class="eyebrow g">Comidas del día</div>'
     +'<div class="sumbig" id="sumBig">'+done+' de '+plan.length+' registradas</div></div>'
     +'<div class="dots" id="sumDots">'+dots+'</div></div>'
-    +(wknd?'<p class="hint"><b>Fin de semana:</b> mantené la lógica — proteína en cada comida, frituras al mínimo. 1-2 comidas libres no arruinan nada; el finde entero libre, sí.</p>'
-          :'<p class="hint">La regla madre: <b>lo que cenás hoy (doble) es tu almuerzo de mañana.</b></p>')
+    +'<p class="hint">La regla madre: <b>lo que cenás hoy (doble) es tu almuerzo de mañana.</b></p>'
     +'</div>';
 
   plan.forEach(m=>{
@@ -575,10 +581,8 @@ function renderHoy(){
   h+='<div class="card"><div class="mhead"><span class="mname">Extras del día</span></div>'
     +'<input class="note" data-extras="1" value="'+esc(rec.extras||'')+'" placeholder="Antojos o cosas fuera del plan (ej: 2 galletitas a las 16)"></div>';
 
-  if(!wknd){
-    h+='<div class="card"><div class="mhead"><span class="mname">La leche con cocoa</span></div>'
-      +'<p class="mdesc" style="margin-bottom:0">250 ml de leche descremada + 1 cucharadita colmada de cocoa (7 g) + 1 cucharadita al ras de azúcar (5 g). Si tu cocoa ya viene azucarada, usá 2 cucharaditas de cocoa (10 g) y no agregues azúcar. Máximo 2 tazas por día.</p></div>';
-  }
+  h+='<div class="card"><div class="mhead"><span class="mname">La leche con cocoa</span></div>'
+    +'<p class="mdesc" style="margin-bottom:0">250 ml de leche descremada + 1 cucharadita colmada de cocoa (7 g) + 1 cucharadita al ras de azúcar (5 g). Si tu cocoa ya viene azucarada, usá 2 cucharaditas de cocoa (10 g) y no agregues azúcar. Máximo 2 tazas por día.</p></div>';
 
   h+='<button class="btn wide" id="btnSaveNow">Guardar cambios</button>';
   return h;
@@ -632,26 +636,14 @@ function renderGym(){
   normChecks(state.gym[selDate]);
   const dia=g.dia||defaultDia(dow);
   curDia=dia;
-  const wknd=(dow===0||dow===6);
 
   let h='<div class="card">'
     +'<div class="eyebrow b">Sesión de gym · L-M-V 19:30</div>'
-    +(dia?'':(wknd
-      ?'<p class="hint">Hoy no hay gym. Tu «cuarto día»: estiramientos en casa 15-20 min.</p>'
-      :'<p class="hint">Hoy no te toca gym. Si igual vas, elegí el día:</p>'))
+    +(dia?'':'<p class="hint">Hoy no te toca gym. Si igual vas, elegí el día:</p>')
     +'<div class="seg3">'
     +['A','B','C'].map(k=>{const p=GYM[k];
       return '<button class="dbtn'+(dia===k?' on':'')+'" data-dia="'+k+'">'+p.label+' · '+p.sub+'<small>'+p.desc+'</small></button>';}).join('')
-    +'</div>';
-
-  if(wknd){
-    h+='<div style="margin-top:12px">'
-      +checklistBlock('strHomeEx','Estiramientos en casa (15-20 min)',
-        'Tu «cuarto día» escondido: el mismo bloque de estiramientos de la rutina, 1 día extra en casa el fin de semana. '+STRETCH_INTRO,
-        STRETCH_ITEMS,g,STRETCH_OUTRO)
-      +'</div>';
-  }
-  h+='</div>';
+    +'</div></div>';
 
   if(!dia) return h;
 
@@ -664,6 +656,14 @@ function renderGym(){
     +'</div>';
 
   plan.ex.forEach((ex,idx)=>{
+    if(ex.paused){
+      h+='<div class="card">'
+        +'<div class="exhead"><span class="exnum">'+(idx+1)+'</span><span class="exname">'+ex.name+'</span></div>'
+        +'<div class="pausedTag">EN PAUSA</div>'
+        +'<p class="excue">'+ex.pausedNote+'</p>'
+        +'</div>';
+      return;
+    }
     const arr=(g.sets&&g.sets[ex.id])||[];
     const pv=prev&&prev.g.sets&&prev.g.sets[ex.id]?fmtSets(prev.g.sets[ex.id],ex.sets):'';
     let rows='';
@@ -687,7 +687,7 @@ function renderGym(){
   h+='<div class="card">'
     +checklistBlock('coreEx','Core del día','',plan.coreItems,g,'')
     +'<div style="margin-top:14px">'
-    +checklistBlock('strEx','Estiramientos y movilidad (12-15 min al final)',
+    +checklistBlock('strEx','Estiramientos y movilidad (10-12 min al final)',
       'Para vos es TAN importante como las pesas: es lo que te va a destrabar la cadera y la parte de atrás de las piernas. '+STRETCH_INTRO,
       STRETCH_ITEMS,g,STRETCH_OUTRO)
     +'</div>'
@@ -969,10 +969,17 @@ function renderProg(){
     return '<div class="wli"><span>'+shortD(p.d)+' — <b>'+kg(p.kg)+' kg</b></span><button data-delw="'+i+'" aria-label="Borrar registro">✕</button></div>';
   }).join('');
 
-  let h='<div class="card"><div class="eyebrow g">Peso corporal</div>'+kpis
+  let h='';
+  if(pD(todayStr()).getDay()===6){
+    const doneToday=state.peso.some(p=>p.d===todayStr());
+    h+= doneToday
+      ? '<div class="satdone">Ya registraste tu peso de hoy (sábado) ✓</div>'
+      : '<div class="satband">Hoy es sábado — tu día de pesaje semanal. Anotalo acá abajo.</div>';
+  }
+  h+='<div class="card"><div class="eyebrow g">Peso corporal</div>'+kpis
     +'<div class="chartbox">'+weightChart()+'</div><div class="cdetail" id="wdetail"></div>'
     +'<div class="wform"><input type="text" inputmode="decimal" id="pesoIn" placeholder="kg de hoy (ej: 77,2)"><button class="btn" id="pesoBtn">Guardar</button></div>'
-    +'<p class="hint">Pesate 1 sola vez por semana: <b>viernes en ayunas</b>, después del baño.</p>'
+    +'<p class="hint">Pesate 1 sola vez por semana: <b>sábado en la farmacia</b>, siempre a la misma hora aproximada y con ropa parecida (no en ayunas, pero sé constante con el horario).</p>'
     +(wlist?'<div class="wlist">'+wlist+'</div>':'')
     +'</div>';
 
@@ -995,8 +1002,9 @@ function renderProg(){
   /* progresión ejercicio */
   let opts='';
   ['A','B','C'].forEach(k=>{
+    const list=GYM[k].ex.filter(e=>!e.paused);
     opts+='<optgroup label="'+GYM[k].label+' · '+GYM[k].desc+'">'
-      +GYM[k].ex.map(e=>'<option value="'+e.id+'"'+(exSelVal===e.id?' selected':'')+'>'+e.name+'</option>').join('')
+      +list.map(e=>'<option value="'+e.id+'"'+(exSelVal===e.id?' selected':'')+'>'+e.name+'</option>').join('')
       +'</optgroup>';
   });
   const ec=exChart(exSelVal);
@@ -1048,9 +1056,9 @@ function render(){
 function renderTop(){ render(); window.scrollTo(0,0); }
 
 /* ================= eventos ================= */
-document.getElementById('prevD').addEventListener('click',()=>{ const d=pD(selDate); d.setDate(d.getDate()-1); selDate=fmtD(d); renderTop(); });
-document.getElementById('nextD').addEventListener('click',()=>{ const d=pD(selDate); d.setDate(d.getDate()+1); selDate=fmtD(d); renderTop(); });
-document.getElementById('todayBtn').addEventListener('click',()=>{ selDate=todayStr(); renderTop(); });
+document.getElementById('prevD').addEventListener('click',()=>{ const d=pD(selDate); d.setDate(d.getDate()-1); while(isWeekend(d)) d.setDate(d.getDate()-1); selDate=fmtD(d); renderTop(); });
+document.getElementById('nextD').addEventListener('click',()=>{ const d=pD(selDate); d.setDate(d.getDate()+1); while(isWeekend(d)) d.setDate(d.getDate()+1); selDate=fmtD(d); renderTop(); });
+document.getElementById('todayBtn').addEventListener('click',()=>{ selDate=anchorToday(); renderTop(); });
 document.querySelectorAll('nav.tabs button').forEach(b=>{
   b.addEventListener('click',()=>{
     tab=b.dataset.tab;
@@ -1220,6 +1228,7 @@ window.addEventListener('beforeprint',()=>{
   if(!document.getElementById('report').innerHTML) fillReport(wkSelVal||defaultWeek());
 });
 
+document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on', b.dataset.tab===tab));
 render();
 </script>
 
